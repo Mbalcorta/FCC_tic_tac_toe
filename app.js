@@ -2,12 +2,21 @@
 var total_boxes = [0, 1, 2, 3, 4, 5, 6, 7, 8]; 
 var box_Totals = []; 
 
-_.each(total_boxes, function(eachBox){
-  box_Totals.push(eachBox[eachBox] = {
-    position: eachBox, eachBox,
-    active: 0
-  })
+_.each(total_boxes, function(boxNumber){
+  $(".container").append("<div class=box id="+boxNumber+"></div>")
 });
-console.log(box_Totals)
 
-$(".container").append("<div class=box></div>")
+var arrayOfRowEnd = 
+  _.filter(total_boxes, function(num){ 
+    var numPosition = num + 1; 
+    if(numPosition % 3 === 0){
+      return num
+     }  
+  });
+
+_.each(arrayOfRowEnd, function(boxNumber){
+console.log(boxNumber)
+    $("#"+boxNumber).css({"backgroundColor": "black"})
+   <!--  $("#"+boxNumber).css({"clear": "right"}) -->
+});
+
