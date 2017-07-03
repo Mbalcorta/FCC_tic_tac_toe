@@ -1,7 +1,24 @@
+h1 { 
+  position: relative;
+  left: 30%;
+}
+
 .container {
-   height: 500px;
+  position: fixed;
+  top: 40%;
+  left: 50%;
+  width:32em;
+  height:40em;
+  margin-top: -13em; /*set to a negative number 1/2 of your height*/
+  margin-left: -15em; /*set to a negative number 1/2 of your width*/
+/*  border: 1px solid #ccc;*/
+/*  background-color: #f3f3f3;*/
+}
+
+.containerBox {
+  height: 500px;
   width: 515px;
-  position: absolute;
+  position: relative;
 }
 
 .box {
@@ -11,4 +28,11 @@
   background-color: green;
   margin: 10px;
   float: left;
+}
+
+.xSpot {
+  position: absolute;
+  top: 15%;
+  left: 25%;
+  font-size: 100px;
 }
