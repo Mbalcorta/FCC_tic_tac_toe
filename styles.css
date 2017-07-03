@@ -1,15 +1,15 @@
 h1 { 
   position: relative;
-  left: 30%;
+  left: 35%;
 }
 
 .container {
-  position: fixed;
+  position: relative;
   top: 40%;
   left: 50%;
   width:32em;
   height:40em;
-  margin-top: -13em; /*set to a negative number 1/2 of your height*/
+  margin-top: -1em; /*set to a negative number 1/2 of your height*/
   margin-left: -15em; /*set to a negative number 1/2 of your width*/
 /*  border: 1px solid #ccc;*/
 /*  background-color: #f3f3f3;*/
