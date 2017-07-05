@@ -30,7 +30,7 @@ h1 {
   float: left;
 }
 
-.xSpot {
+.xSpot, .oSpot {
   position: absolute;
   top: 15%;
   left: 25%;
