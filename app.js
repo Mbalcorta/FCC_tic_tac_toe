@@ -8,6 +8,7 @@ var game_started = false;
  // must create 3 * 3 square dynamically created
 var total_boxes = [0, 1, 2, 3, 4, 5, 6, 7, 8]; 
 var box_Totals = [];
+var catsGame = [];
 
 var winning_combo_array_x = [[0, 1, 2], [3, 4, 5], [6, 7, 8],[2, 4, 6],[1, 4, 7], [2, 5, 8],[0, 3, 6], [0, 4, 8]]; 
 
@@ -70,6 +71,11 @@ if(!game_started) {
 // updates box object upon every click 
   function updateBoxObject(boxNumber, player){
       box_Totals[boxNumber].active = true;
+//pushes box number into array to detemine if cats game
+      catsGame.push(boxNumber);
+      if(catsGame.length === box_Totals.length){
+        resetGame('no one won')
+        }
       box_Totals[boxNumber].selector = player; 
   };
 
@@ -100,14 +106,12 @@ function onlyOnePlayerBoxType(allBoxesArray, playerType){
 function checkIfWinner(player, array_tracker){
  
 // returns array of players positions
-
   var allPlayerPosition = _.filter(box_Totals,function(object){   
       return object.selector === player; 
     }).map(function(obj) {
       return obj.box;
   });
 
-//need to fix not sure what i'm trying to do
   if(firstPlayer && !winnerFound){
 
     var onlyPlayerOneBoxes = onlyOnePlayerBoxType(box_Totals, "X")
@@ -128,6 +132,13 @@ function checkIfWinner(player, array_tracker){
 
 //resets game when winner found
 function resetGame(player){
+  var title;
+
+  if(player === 'no one won'){
+    title = 'Cats Game! Would you like to play again?'
+  } else {
+    title = 'Congrats! '+player+' player you won! Would you like to play again?'
+  }
 
 function popUpConfirmBox(player){
 
@@ -137,7 +148,7 @@ function popUpConfirmBox(player){
 $('body').css({ 'z-index':'1', 'background-color': 'white', 'opacity': '1' });
 
   $('#dialog_box').dialog({
-      title: 'Congrats! '+player+' player you won! Would you like to play again?',
+      title: title,
       width: 500,
       height: 200,
       modal: true,
@@ -178,14 +189,13 @@ $('body').css({ 'z-index':'1', 'background-color': 'white', 'opacity': '1' });
 function checkCounter(player, array){
   for (var i = 0; i < array.length; i++) {
     if(array[i].length === 0){
-      console.log('we have a winner, congrats ! ', player)
       winnerFound = true;
       if(player === 'X'){
          resetGame('X'); 
       } else {
         resetGame('O')
         }
-      }
+      } 
     };
   };  
 });
