@@ -36,3 +36,27 @@ h1 {
   left: 25%;
   font-size: 100px;
 }
+
+/*#overlay {
+    position: absolute;
+    top:0;
+    left:0;
+    bottom:0;
+    right:0;
+    width:auto;
+    height:auto;
+    z-index:-1;
+    background-color: Black;
+    opacity: .5;
+}*/
+
+.ui-dialog { 
+  z-index: 1000 !important ;
+}
+
+.ui-dialog-titlebar-close {
+    visibility: hidden;
+}
+/*body {
+  background-color: white; 
+}*/
