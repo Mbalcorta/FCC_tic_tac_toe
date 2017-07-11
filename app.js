@@ -1,10 +1,12 @@
 
 $(document).ready(function(){
 var player_one = "X";
-var player_two = "O"
-var firstPlayer = true;
+var player_two = "O";
+var firstPlayer;
 var winnerFound = false; 
 var game_started = false; 
+var chosenPiece;
+var turns = true;
  // must create 3 * 3 square dynamically created
 var total_boxes = [0, 1, 2, 3, 4, 5, 6, 7, 8]; 
 var box_Totals = [];
@@ -14,6 +16,39 @@ var winning_combo_array_x = [[0, 1, 2], [3, 4, 5], [6, 7, 8],[2, 4, 6],[1, 4, 7]
 
 var winning_combo_array_o = [[0, 1, 2], [3, 4, 5], [6, 7, 8],[2, 4, 6],[1, 4, 7], [2, 5, 8],[0, 3, 6], [0, 4, 8]]; 
 
+//prompt user if they want to be x or o
+  function askUser(){
+     $('.container').prepend(
+  '<div id="dialog_box" style= "display: none;"></div>');
+
+$('body').css({ 'z-index':'1', 'background-color': 'white', 'opacity': '1' });
+  
+     $('#dialog_box').dialog({
+      title: 'Which letter would you like to be?',
+      width: 100,
+      height: 50,
+      modal: true,
+      resizable: true,
+      draggable: false,
+      buttons: [
+      {
+      text: 'O',
+      click: function() {
+        $('#dialog_box').hide();
+        $('.ui-dialog-content').dialog('close'); 
+        chosenPiece = "O";
+        }
+      },
+      {
+      text: 'X',
+      click: function(){
+        $('#dialog_box').hide();
+        $('.ui-dialog-content').dialog('close'); 
+         chosenPiece = "X";
+        }
+      }]
+    })
+  }
 
   // creates each box with an object  
   function createBoxes(){
@@ -29,11 +64,8 @@ var winning_combo_array_o = [[0, 1, 2], [3, 4, 5], [6, 7, 8],[2, 4, 6],[1, 4, 7]
         selector: null    
        })
       });
-       console.log('!!!!!!!!! ', box_Totals)
     } else {
-
      _.each(total_boxes, function(boxNumber){
-   
       $(".containerBox").append("<div class=box id="+boxNumber+"></div>")
         box_Totals.push({
         box: boxNumber,
@@ -48,25 +80,58 @@ var winning_combo_array_o = [[0, 1, 2], [3, 4, 5], [6, 7, 8],[2, 4, 6],[1, 4, 7]
 if(!game_started) {
   createBoxes()
   game_started = true; 
+  askUser();
 };
+
+//if choosen piece is x then user goes first 
+
+function playerPlacePiece(boxClicked, boxClickedId){
+  var boxNotOccuplied = boxClicked;
+  if(!boxNotOccuplied){
+    $('#'+boxClickedId).append('<div class=xSpot>'+
+        player_one+'</div>');
+    updateBoxObject(boxClickedId, player_one);
+    checkIfWinner(player_one, winning_combo_array_x);
+  }
+}
+
 
 // when box clicked it places an x or an o 
  $(document).on("click", ".box", function(){
-  var boxNotOccuplied = box_Totals[this.id].active;
-    if(!boxNotOccuplied){
-      if(firstPlayer){
-        $(this).append('<div class=xSpot>'+player_one+'</div>');
-        updateBoxObject(this.id, player_one);
-        checkIfWinner(player_one, winning_combo_array_x);
-        firstPlayer = false; 
-      } else {
-        $(this).append('<div class=oSpot>'+player_two+'</div>');
-        updateBoxObject(this.id, player_two);
-        checkIfWinner(player_two, winning_combo_array_o );
-        firstPlayer = true; 
-      }
-    }
+  if(chosenPiece === "X" && turns){
+      var boxClicked = box_Totals[this.id].active; 
+      var boxClickedId = box_Totals[this.id].box;
+      firstPlayer = 'user';
+      playerPlacePiece(boxClicked, boxClickedId);
+      turns = false; 
+      computerPlacement(); 
+    } 
   });
+
+ //build function that randomly puts o piece on the tic tac toe board
+function computerPlacement(){
+  if(!turns){
+  var randomPlacement = _.filter(box_Totals, function(eachBoxObj){
+       return !eachBoxObj.active  
+      }).map(function(obj){
+        return obj.box; 
+      })
+
+var randomValue = randomPlacement[Math.floor(randomPlacement.length * Math.random())];
+
+  setTimeout(function(){ 
+    $('#'+randomValue).append('<div class=oSpot>'+player_two+'</div>'); 
+    }, 500);
+  
+  var boxChoosenId = box_Totals[randomValue].box;
+  updateBoxObject(boxChoosenId, player_two);
+  firstPlayer = 'computer'; 
+  checkIfWinner(player_two, winning_combo_array_o );
+  turns = true;
+
+  }
+}
+
 
 // updates box object upon every click 
   function updateBoxObject(boxNumber, player){
@@ -104,7 +169,7 @@ function onlyOnePlayerBoxType(allBoxesArray, playerType){
 
   // create function that checks to see if we have a winner after each click
 function checkIfWinner(player, array_tracker){
- 
+
 // returns array of players positions
   var allPlayerPosition = _.filter(box_Totals,function(object){   
       return object.selector === player; 
@@ -112,11 +177,13 @@ function checkIfWinner(player, array_tracker){
       return obj.box;
   });
 
-  if(firstPlayer && !winnerFound){
+
+  if(firstPlayer === "user" && !winnerFound){
 
     var onlyPlayerOneBoxes = onlyOnePlayerBoxType(box_Totals, "X")
 
     if(onlyPlayerOneBoxes.length >= 3){
+
       updatesWinningArray(onlyPlayerOneBoxes, array_tracker)
       checkCounter(player, array_tracker); 
     }; 
@@ -163,7 +230,6 @@ $('body').css({ 'z-index':'1', 'background-color': 'white', 'opacity': '1' });
           $('body').css({'background-image' : 'url(cat.jpg)',
       'background-repeat': 'no-repeat'});
         }
-    
       },
       {
       text: 'sure',
@@ -174,10 +240,13 @@ $('body').css({ 'z-index':'1', 'background-color': 'white', 'opacity': '1' });
 
         winning_combo_array_o = [[0, 1, 2], [3, 4, 5], [6, 7, 8],[2, 4, 6],[1, 4, 7], [2, 5, 8],[0, 3, 6], [0, 4, 8]]; 
         box_Totals = [];
+        catsGame = [];
         winnerFound = false;
-        firstPlayer = true;
+        firstPlayer = "";
+        turns = true; 
         $('.containerBox').detach();
           createBoxes()
+          askUser()
         }
       }]
     })
