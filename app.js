@@ -10,6 +10,9 @@ var playerGoesFirst;
 var total_boxes = [0, 1, 2, 3, 4, 5, 6, 7, 8]; 
 var box_Totals = [];
 var catsGame = [];
+var boxChoosenId;
+
+var arraySpotsWanted = [4, 0, 8, 6, 2]; 
 
 var winning_combo_array_x = [[0, 1, 2], [3, 4, 5], [6, 7, 8],[2, 4, 6],[1, 4, 7], [2, 5, 8],[0, 3, 6], [0, 4, 8]]; 
 
@@ -88,26 +91,62 @@ $('body').css({ 'z-index':'1', 'background-color': 'white', 'opacity': '1' });
   }
 
  //build function that randomly puts x or o piece on the tic tac toe board
+//**** currently letters are being overwritten when squares occupied****///
 function computerPlacement(divByLetterType, arrayType, playerType){
+var placement; 
+console.log(catsGame.length)
+if(catsGame.length <= 9){
 
-  var randomPlacement = _.filter(box_Totals, function(eachBoxObj){
+    var randomPlacement = _.filter(box_Totals, function(eachBoxObj){
        return !eachBoxObj.active  
       }).map(function(obj){
         return obj.box; 
       })
+      
+  function checkIfSpot(){
 
-var randomValue = randomPlacement[Math.floor(randomPlacement.length * Math.random())];
+    checking:
+    for (var i = 0; i < arraySpotsWanted.length; i++) {
+      for (var j = 0; j < randomPlacement.length; j++) {
+        if(arraySpotsWanted[i] === randomPlacement[j]){
+        placement = arraySpotsWanted[i]; 
+        console.log('######### ', randomPlacement, placement)
+        arraySpotsWanted.splice(i, 1);
+        break checking;
+        };
+      };
+    };
 
-  setTimeout(function(){ 
-    $('#'+randomValue).append('<div class='+divByLetterType+'>'+playerType+'</div>'); 
+  }; 
+
+  checkIfSpot();
+   console.log("************ ", box_Totals, randomPlacement)
+  if(placement === undefined){ 
+    setTimeout(function(){ 
+    $('#'+randomPlacement[0]).append('<div class='+divByLetterType+'>'+playerType+'</div>');
     }, 1000);
-  
-  var boxChoosenId = box_Totals[randomValue].box;
+    console.log('********** ', boxChoosenId, randomPlacement)
+    boxChoosenId = box_Totals[randomPlacement[0]].box;
+  } else {
+  setTimeout(function(){ 
+    $('#'+placement).append('<div class='+divByLetterType+'>'+playerType+'</div>');
+     placement = "";  
+    }, 1000);
+    boxChoosenId = box_Totals[placement].box;
+  }
+
+
   updateBoxObject(boxChoosenId, playerType);
   checkIfWinner(playerType, arrayType);
+
   if(!winnerFound){
     playerGoesFirst = "human"; 
   }; 
+}
+// var randomValue = randomPlacement[Math.floor(randomPlacement.length * Math.random())];
+
+
+ 
 }
 
 
@@ -125,6 +164,7 @@ function playerPlacePiece(boxClicked, boxClickedId, chosenPiece, div, arrayType,
 //opposite marker is chosen for computer to randomly place element
       if(marker === 'O' && playerGoesFirst === "human"){
         var xDiv = 'xSpot';
+        console.log('place one')
         computerPlacement(xDiv, winning_combo_array_x, player_x);
       } else {
         var oDiv = 'oSpot';
@@ -248,6 +288,7 @@ $('body').css({ 'z-index':'1', 'background-color': 'white', 'opacity': '1' });
         winning_combo_array_o = [[0, 1, 2], [3, 4, 5], [6, 7, 8],[2, 4, 6],[1, 4, 7], [2, 5, 8],[0, 3, 6], [0, 4, 8]]; 
         box_Totals = [];
         catsGame = [];
+        arraySpotsWanted = [4, 0, 8, 6, 2];
         winnerFound = false;
         $('.containerBox').detach();
           createBoxes()
