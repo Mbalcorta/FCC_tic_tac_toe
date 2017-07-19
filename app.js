@@ -93,49 +93,83 @@ $('body').css({ 'z-index':'1', 'background-color': 'white', 'opacity': '1' });
  //build function that randomly puts x or o piece on the tic tac toe board
 //**** currently letters are being overwritten when squares occupied****///
 function computerPlacement(divByLetterType, arrayType, playerType){
-var placement; 
-console.log(catsGame.length)
-if(catsGame.length <= 9){
+  var placement; 
+  var oppositePiece = 'X'; 
+  var arrayToAttack = winning_combo_array_x;
+  var blockSpot = false; 
 
-    var randomPlacement = _.filter(box_Totals, function(eachBoxObj){
-       return !eachBoxObj.active  
-      }).map(function(obj){
-        return obj.box; 
-      })
-      
-  function checkIfSpot(){
+  if(catsGame.length <= 9){
 
-    checking:
-    for (var i = 0; i < arraySpotsWanted.length; i++) {
-      for (var j = 0; j < randomPlacement.length; j++) {
-        if(arraySpotsWanted[i] === randomPlacement[j]){
-        placement = arraySpotsWanted[i]; 
-        console.log('######### ', randomPlacement, placement)
-        arraySpotsWanted.splice(i, 1);
-        break checking;
-        };
-      };
-    };
+      var randomPlacement = _.filter(box_Totals, function(eachBoxObj){
+         return !eachBoxObj.active  
+        }).map(function(obj){
+          return obj.box; 
+        })
 
-  }; 
-
-  checkIfSpot();
-   console.log("************ ", box_Totals, randomPlacement)
-  if(placement === undefined){ 
-    setTimeout(function(){ 
-    $('#'+randomPlacement[0]).append('<div class='+divByLetterType+'>'+playerType+'</div>');
-    }, 1000);
-    console.log('********** ', boxChoosenId, randomPlacement)
-    boxChoosenId = box_Totals[randomPlacement[0]].box;
-  } else {
-  setTimeout(function(){ 
-    $('#'+placement).append('<div class='+divByLetterType+'>'+playerType+'</div>');
-     placement = "";  
-    }, 1000);
-    boxChoosenId = box_Totals[placement].box;
+  if(playerType === 'X'){
+    oppositePiece = 'O';
+    arrayToAttack = winning_combo_array_o;
   }
 
 
+  function checkIfPlayerNeedsBlocking(otherPlayer, opponentsArray){
+      var blockPlayer = _.filter(opponentsArray, function(eachArray){
+      if(eachArray.length === 1 && !box_Totals[eachArray[0]].active){
+        blockSpot = true; 
+        return eachArray;
+        }
+      })
+
+      placement = blockPlayer[0]; 
+      console.log(blockPlayer.length, blockPlayer)
+    }
+
+    if(randomPlacement.length <= 7){
+      checkIfPlayerNeedsBlocking(oppositePiece, arrayToAttack); 
+          console.log('in here on line 141$$$$', blockSpot)
+
+  }
+
+  
+
+
+  function checkIfSpot(){
+    if(blockSpot){
+      placeDiv();
+    } else {
+      console.log('two, in here')
+      checking:
+        for (var i = 0; i < arraySpotsWanted.length; i++) {
+        for (var j = 0; j < randomPlacement.length; j++) {
+          if(arraySpotsWanted[i] === randomPlacement[j]){
+          placement = arraySpotsWanted[i]; 
+          arraySpotsWanted.splice(i, 1);
+          break checking;
+          };
+        };
+      };
+       placeDiv();
+    };
+   
+  }; 
+
+  checkIfSpot();
+
+  function placeDiv(){
+     if(placement === undefined){ 
+      setTimeout(function(){ 
+        $('#'+randomPlacement[0]).append('<div class='+divByLetterType+'>'+playerType+'</div>');
+        }, 1000);
+        boxChoosenId = box_Totals[randomPlacement[0]].box;
+  } else {
+    setTimeout(function(){ 
+      $('#'+placement).append('<div class='+divByLetterType+'>'+playerType+'</div>');
+       placement = "";  
+      }, 1000);
+      boxChoosenId = box_Totals[placement].box;
+    }
+  }
+   
   updateBoxObject(boxChoosenId, playerType);
   checkIfWinner(playerType, arrayType);
 
@@ -162,9 +196,9 @@ function playerPlacePiece(boxClicked, boxClickedId, chosenPiece, div, arrayType,
 
     if(!winnerFound){
 //opposite marker is chosen for computer to randomly place element
+
       if(marker === 'O' && playerGoesFirst === "human"){
         var xDiv = 'xSpot';
-        console.log('place one')
         computerPlacement(xDiv, winning_combo_array_x, player_x);
       } else {
         var oDiv = 'oSpot';
@@ -177,7 +211,6 @@ function playerPlacePiece(boxClicked, boxClickedId, chosenPiece, div, arrayType,
 
 // when box clicked it places an x or an o 
  $(document).on("click", ".box", function(){
-  console.log(chosenPiece, playerGoesFirst)
   if(chosenPiece === "O" && playerGoesFirst === "human"){
        var oDiv = 'oSpot';
       var oMarker = 'O';  
@@ -237,9 +270,10 @@ function checkIfWinner(player, array_tracker){
   });
 
   var onlyOnePlayerBoxes = onlyOnePlayerBoxType(box_Totals, player)
-  
+      
+  updatesWinningArray(onlyOnePlayerBoxes, array_tracker);
+
   if(onlyOnePlayerBoxes.length >= 3){
-    updatesWinningArray(onlyOnePlayerBoxes, array_tracker);
     checkCounter(player, array_tracker); 
   }
 }; 
