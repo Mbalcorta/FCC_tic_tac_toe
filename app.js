@@ -97,7 +97,7 @@ function computerPlacement(divByLetterType, arrayType, playerType){
   var oppositePiece = 'X'; 
   var arrayToAttack = winning_combo_array_x;
   var blockSpot = false; 
-
+  var forTheWin = false; 
   if(catsGame.length <= 9){
 
       var randomPlacement = _.filter(box_Totals, function(eachBoxObj){
@@ -118,26 +118,39 @@ function computerPlacement(divByLetterType, arrayType, playerType){
         blockSpot = true; 
         return eachArray;
         }
-      })
+      });
 
-      placement = blockPlayer[0]; 
-      console.log(blockPlayer.length, blockPlayer)
+      placement = blockPlayer[0][0];
+      console.log('124 blockplayer', placement)
     }
 
-    if(randomPlacement.length <= 7){
-      checkIfPlayerNeedsBlocking(oppositePiece, arrayToAttack); 
-          console.log('in here on line 141$$$$', blockSpot)
-
+  function computerWins(){
+    var winPlacement = _.filter(arrayType, function(eachArray){
+      if(eachArray.length === 1 && !box_Totals[eachArray[0]].active){
+        forTheWin = true; 
+        return eachArray;
+        }
+      });
   }
 
-  
 
+  if(randomPlacement.length <= 7){
+       computerWins();
+      if(!forTheWin){
+        checkIfPlayerNeedsBlocking(oppositePiece, arrayToAttack); 
+      } 
+  }
 
+ 
   function checkIfSpot(){
-    if(blockSpot){
+    if(forTheWin){
+      console.log('forthewin fc', placement)
+      placeDiv();
+    } else if(blockSpot){
+      console.log('blockspot fc')
       placeDiv();
     } else {
-      console.log('two, in here')
+      console.log('randomPlacement')
       checking:
         for (var i = 0; i < arraySpotsWanted.length; i++) {
         for (var j = 0; j < randomPlacement.length; j++) {
@@ -155,14 +168,16 @@ function computerPlacement(divByLetterType, arrayType, playerType){
 
   checkIfSpot();
 
-  function placeDiv(){
+  function placeDiv(){ 
      if(placement === undefined){ 
       setTimeout(function(){ 
         $('#'+randomPlacement[0]).append('<div class='+divByLetterType+'>'+playerType+'</div>');
         }, 1000);
         boxChoosenId = box_Totals[randomPlacement[0]].box;
   } else {
+
     setTimeout(function(){ 
+      console.log($('#'+placement), placement)
       $('#'+placement).append('<div class='+divByLetterType+'>'+playerType+'</div>');
        placement = "";  
       }, 1000);
@@ -174,13 +189,9 @@ function computerPlacement(divByLetterType, arrayType, playerType){
   checkIfWinner(playerType, arrayType);
 
   if(!winnerFound){
-    playerGoesFirst = "human"; 
-  }; 
-}
-// var randomValue = randomPlacement[Math.floor(randomPlacement.length * Math.random())];
-
-
- 
+      playerGoesFirst = "human"; 
+    }; 
+  }
 }
 
 
