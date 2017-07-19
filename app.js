@@ -120,9 +120,10 @@ function computerPlacement(divByLetterType, arrayType, playerType){
         }
       });
 
+      if(blockPlayer.length === 1){
       placement = blockPlayer[0][0];
-      console.log('124 blockplayer', placement)
     }
+  }
 
   function computerWins(){
     var winPlacement = _.filter(arrayType, function(eachArray){
@@ -131,12 +132,15 @@ function computerPlacement(divByLetterType, arrayType, playerType){
         return eachArray;
         }
       });
+    if(winPlacement.length === 1){
+      placement = winPlacement[0][0];
+    }
   }
 
 
   if(randomPlacement.length <= 7){
        computerWins();
-      if(!forTheWin){
+      if(!forTheWin && !blockSpot){
         checkIfPlayerNeedsBlocking(oppositePiece, arrayToAttack); 
       } 
   }
@@ -144,13 +148,10 @@ function computerPlacement(divByLetterType, arrayType, playerType){
  
   function checkIfSpot(){
     if(forTheWin){
-      console.log('forthewin fc', placement)
       placeDiv();
     } else if(blockSpot){
-      console.log('blockspot fc')
       placeDiv();
     } else {
-      console.log('randomPlacement')
       checking:
         for (var i = 0; i < arraySpotsWanted.length; i++) {
         for (var j = 0; j < randomPlacement.length; j++) {
@@ -163,7 +164,6 @@ function computerPlacement(divByLetterType, arrayType, playerType){
       };
        placeDiv();
     };
-   
   }; 
 
   checkIfSpot();
@@ -177,7 +177,6 @@ function computerPlacement(divByLetterType, arrayType, playerType){
   } else {
 
     setTimeout(function(){ 
-      console.log($('#'+placement), placement)
       $('#'+placement).append('<div class='+divByLetterType+'>'+playerType+'</div>');
        placement = "";  
       }, 1000);
